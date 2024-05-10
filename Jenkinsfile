@@ -17,7 +17,9 @@ pipeline {
         stage('Terraform apply') {
             steps {
                 dir('terraform') {
-                    sh 'terraform apply --var-file ${terraform_dev_varfile} --auto-approve'
+                    withCredentials([file(credentialsId: 'terraform_dev_varfile', variable: 'terraform_dev_varfile')]) {
+                        sh "terraform apply --var-file $terraform_dev_varfile --auto-approve"
+                    }
                 }
             }
         }
