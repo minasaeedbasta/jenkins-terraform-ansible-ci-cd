@@ -13,8 +13,8 @@ resource "aws_db_instance" "default" {
   engine                 = var.rds.engine
   engine_version         = var.rds.engine_version
   instance_class         = var.rds.class
-  username               = var.rds.username
-  password               = var.rds.password
+  username               = var.rds_username
+  password               = var.rds_password
   parameter_group_name   = "default.mysql5.7"
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name    
   vpc_security_group_ids = [aws_security_group.sg_private_rds.id]

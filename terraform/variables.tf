@@ -35,7 +35,13 @@ variable "rds" {
     class             = string
     storage_type      = string
     allocated_storage = number
-    username          = string
-    password          = string
   })
+}
+
+variable "rds_username" {
+  type = string
+}
+
+variable "rds_password" {
+  type = string
 }
