@@ -1,6 +1,6 @@
-resource "aws_security_group" "sg_allow_ssh_and_3000" {
+resource "aws_security_group" "sg_allow_ssh" {
   vpc_id = module.network.vpc_id
-  name   = "sg_allow_ssh_and_3000"
+  name   = "sg_allow_ssh"
 
   ingress {
     from_port   = 22
@@ -9,12 +9,6 @@ resource "aws_security_group" "sg_allow_ssh_and_3000" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   egress {
     from_port   = 22
@@ -24,19 +18,26 @@ resource "aws_security_group" "sg_allow_ssh_and_3000" {
   }
 
   tags = {
-    Name = "sg_allow_ssh_and_3000"
+    Name = "sg_allow_ssh"
   }
 }
 
-resource "aws_security_group" "sg_allow_ssh_from_vpc" {
+resource "aws_security_group" "sg_allow_ssh_and_3000" {
   vpc_id = module.network.vpc_id
-  name   = "sg_allow_ssh_from_vpc"
+  name   = "sg_allow_ssh_and_3000"
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [module.network.vpc_cidr_block]
+  }
+
+    ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    security_groups = [ aws_security_group.lb_sg ]
   }
 
   egress {
@@ -47,7 +48,7 @@ resource "aws_security_group" "sg_allow_ssh_from_vpc" {
   }
 
   tags = {
-    Name = "sg_allow_ssh_from_vpc"
+    Name = "sg_allow_ssh_and_3000"
   }
 }
 

@@ -17,7 +17,7 @@ resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.ubuntu22.id
   instance_type               = var.instances[0].type
   subnet_id                   = module.network.public1_subnet_id
-  vpc_security_group_ids      = [aws_security_group.sg_allow_ssh_and_3000.id]
+  vpc_security_group_ids      = [aws_security_group.sg_allow_ssh.id]
   associate_public_ip_address = var.instances[0].is_public
   key_name                    = aws_key_pair.ssh_key.key_name
 
@@ -60,7 +60,7 @@ resource "aws_instance" "application" {
   ami                    = data.aws_ami.ubuntu22.id
   instance_type          = var.instances[1].type
   subnet_id              = module.network.private1_subnet_id
-  vpc_security_group_ids = [aws_security_group.sg_allow_ssh_from_vpc.id]
+  vpc_security_group_ids = [aws_security_group.sg_allow_ssh_and_3000.id]
   key_name               = aws_key_pair.ssh_key.key_name
 
   tags = {
