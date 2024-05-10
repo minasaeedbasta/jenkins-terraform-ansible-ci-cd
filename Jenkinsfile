@@ -3,7 +3,7 @@ pipeline {
 
     parameters {
         choice(name: 'action',choices: ['apply', 'destroy'],description: 'Apply or destroy resources')
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+        booleanParam(name: 'autoApprove', defaultValue: true, description: 'Automatically run apply after generating plan?')
         choice(name: 'environment',choices: ['dev', 'prod'],description: 'Workspace/environment file to use for deployment')
     }
     
@@ -21,22 +21,16 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/minasaeedbasta/jenkins-terraform-ansible-ci-cd.git'
             }
         }
-        stage('Create Workspace') {
+        stage('Plan') {
             steps {
                 dir('terraform'){
+                    sh 'terraform init -input=false'
                     script {
                         def workspace = sh(script: "terraform workspace list | grep ${params.environment} || true", returnStdout: true).trim()
                         if (workspace.isEmpty()) {
                             sh "terraform workspace new ${params.environment}"
                         }
                     }
-                }
-            }
-        }
-        stage('Plan') {
-            steps {
-                dir('terraform'){
-                    sh 'terraform init -input=false'
                     sh 'terraform workspace select ${environment}'
                     sh "terraform plan -input=false -out tfplan --var-file=${params.environment}.tfvars"
                     sh 'terraform show -no-color tfplan > tfplan.txt'
