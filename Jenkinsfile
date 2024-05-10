@@ -17,7 +17,7 @@ pipeline {
         stage('Terraform apply') {
             steps {
                 dir('terraform') {
-                    sh 'terraform apply --auto-approve'
+                    sh 'terraform apply --var-file ${terraform_dev_varfile} --auto-approve'
                 }
             }
         }
