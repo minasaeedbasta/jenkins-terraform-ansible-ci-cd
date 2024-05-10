@@ -1,5 +1,5 @@
 resource "aws_lb" "app_alb" {
-  name               = "app_alb"
+  name               = "app-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb_sg.id]
@@ -11,7 +11,7 @@ resource "aws_lb" "app_alb" {
 }
 
 resource "aws_lb_target_group" "app_lb_tg" {
-  name     = "app_lb_tg"
+  name     = "app-lb-tg"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = module.network.vpc_id
