@@ -1,0 +1,6 @@
+Host bastion
+   User ubuntu
+   Hostname ec2-52-71-172-225.compute-1.amazonaws.com # bastion host public dns
+
+Host ip-10-0-2-36.ec2.internal  # app private dns
+   ProxyJump bastion

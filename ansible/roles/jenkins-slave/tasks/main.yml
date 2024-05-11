@@ -1,0 +1,77 @@
+- name: Install docker prerquests and openjdk
+  apt:
+    pkg:
+      - ca-certificates
+      - curl
+      - openjdk-17-jdk
+    state: present
+    update_cache: yes
+
+- name: Update keyrings permissions
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker's official GPG key
+  block:
+    - name: docker repo | no apt key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+    - name: docker repo | apt source
+      apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        filename: "docker"
+        state: present
+
+- name: Update permissions to docker.asc
+  file:
+    path: /etc/apt/keyrings/docker.asc
+    mode: a+r
+
+- name: Install docker
+  apt:
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+
+- name: Added ubuntu user to docker group
+  user:
+    name: ubuntu
+    groups: docker
+
+- name: Install prerequisites (gnupg and software-properties-common)
+  apt:
+    pkg:
+    - gnupg
+    - software-properties-common
+
+- name: Add HashiCorp GPG key
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+    keyring: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: Add HashiCorp APT repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+    filename: hashicorp.list
+
+- name: Install Terraform
+  apt:
+    name: terraform
+    state: present
+    update_cache: yes
+
+- name: Create jenkins directory
+  file:
+    path: /home/ubuntu/jenkins
+    mode: '0777'
+    state: directory

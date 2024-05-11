@@ -1,0 +1,6 @@
+- name: configure ec2 as jenkins master
+  hosts: master
+  remote_user: ubuntu
+  become: yes
+  roles:
+    - jenkins-master

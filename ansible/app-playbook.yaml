@@ -1,0 +1,6 @@
+- name: configure app private ec2 as jenkins slave
+  hosts: app
+  remote_user: ubuntu
+  become: yes
+  roles:
+    - jenkins-slave

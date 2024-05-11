@@ -1,0 +1,45 @@
+- name: Install jenkins prerquests
+  apt:
+    name: openjdk-17-jdk
+    state: present
+    update_cache: yes
+
+- name: Update keyrings permissions
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add jenkins's official GPG key
+  block:
+    - name: jenkins repo | no apt key
+      get_url:
+        url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+    - name: jenkins repo | apt source
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/"
+        filename: "jenkins.list"
+        state: present
+
+- name: Update permissions to jenkins.asc
+  file:
+    path: /usr/share/keyrings/jenkins-keyring.asc
+    mode: a+r
+
+- name: Install jenkins
+  apt:
+    name: jenkins
+    state: present
+    update_cache: yes
+
+- name: jenkins_password
+  command: cat /var/lib/jenkins/secrets/initialAdminPassword
+  register: jenkins_password
+  ignore_errors: true
+  changed_when: false
+  failed_when: false
+
+- name: Print jenkins_password
+  debug:
+    msg: "{{jenkins_password.stdout}}"
