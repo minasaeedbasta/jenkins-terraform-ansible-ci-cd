@@ -2,6 +2,8 @@
 
 This repository implements a comprehensive CI/CD pipeline that automates infrastructure provisioning and application deployment on AWS. It utilizes Jenkins for orchestration, Terraform for infrastructure as code (IaC), and Ansible for configuration management.
 
+![AWS Architecture](./images/architecture.jpg)
+
 **Key Features:**
 
 - **Infrastructure as Code (IaC):** Terraform manages infrastructure creation and configuration, promoting consistency and repeatability across environments.
