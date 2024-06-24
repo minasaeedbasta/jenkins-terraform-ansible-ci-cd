@@ -21,7 +21,7 @@ stages:
       inputs:
         provider: 'aws'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         backendServiceAWS: 'aws_terraform'
         backendAWSBucketName: 'terraform-state-mina-lab'
         backendAWSKey: 'terraform.tfstate'
@@ -34,7 +34,7 @@ stages:
       inputs:
         provider: 'aws'
         command: 'plan'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         commandOptions: '-var-file="dev.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
 
@@ -54,7 +54,7 @@ stages:
       inputs:
         provider: 'aws'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         backendServiceAWS: 'aws_terraform'
         backendAWSBucketName: 'terraform-state-mina-lab'
         backendAWSKey: 'terraform.tfstate'
@@ -67,6 +67,6 @@ stages:
       inputs:
         provider: 'aws'
         command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         commandOptions: '-var-file="dev.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
