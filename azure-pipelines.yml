@@ -1,0 +1,72 @@
+trigger:
+- main
+pr:
+  branches:
+    include:
+    - '*'
+stages:
+- stage: Plan
+  condition: eq(variables['Build.Reason'], 'PullRequest')
+  jobs:
+  - job: terraformPlan
+    pool:
+      name: 'my-pool'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+        
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'aws'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        backendServiceAWS: 'aws_terraform'
+        backendAWSBucketName: 'terraform-state-mina-lab'
+        backendAWSKey: 'terraform.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Plan'
+      env:
+        TF_VAR_rds_username: $(TF_VAR_rds_username)
+        TF_VAR_rds_password: $(TF_VAR_rds_password)
+      inputs:
+        provider: 'aws'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        commandOptions: '-var-file="dev.tfvars"'
+        environmentServiceNameAWS: 'aws_terraform'
+
+- stage: Apply
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  jobs:
+  - job: terraformApply
+    pool:
+      name: 'my-pool'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+    
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'aws'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        backendServiceAWS: 'aws_terraform'
+        backendAWSBucketName: 'terraform-state-mina-lab'
+        backendAWSKey: 'terraform.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Apply'
+      env:
+        TF_VAR_rds_username: $(TF_VAR_rds_username)
+        TF_VAR_rds_password: $(TF_VAR_rds_password)
+      inputs:
+        provider: 'aws'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure-terraform'
+        commandOptions: '-var-file="dev.tfvars"'
+        environmentServiceNameAWS: 'aws_terraform'
