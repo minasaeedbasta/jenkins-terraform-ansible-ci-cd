@@ -90,6 +90,7 @@ stages:
         environmentServiceNameAWS: 'aws_terraform'
     
     - task: TerraformTaskV4@4
+      displayName: 'Terraform Destroy'
       condition: eq('${{ parameters.action }}', 'destroy')
       inputs:
         provider: 'aws'
