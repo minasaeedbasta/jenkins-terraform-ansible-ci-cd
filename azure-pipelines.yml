@@ -6,6 +6,13 @@ parameters:
   values:
   - dev
   - prod
+- name: action
+  displayName: Select terraform action
+  type: string
+  default: apply
+  values:
+  - apply
+  - destroy
 
 trigger:
 - main
@@ -80,4 +87,12 @@ stages:
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         commandOptions: '-var-file="${{ parameters.env }}.tfvars"'
+        environmentServiceNameAWS: 'aws_terraform'
+    
+    - task: TerraformTaskV4@4
+      condition: eq('${{ parameters.action }}', 'destroy')
+      inputs:
+        provider: 'aws'
+        command: 'destroy'
+        commandOptions: '-var-file="${{ parameters.env }}.tfvars'
         environmentServiceNameAWS: 'aws_terraform'
