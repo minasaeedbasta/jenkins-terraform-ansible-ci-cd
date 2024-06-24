@@ -88,12 +88,36 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         commandOptions: '-var-file="${{ parameters.env }}.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
+
+- stage: Destroy
+  condition: eq('${{ parameters.action }}', 'destroy')
+  jobs:
+  - job: terraformDestroy
+    pool:
+      name: 'my-pool'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
     
     - task: TerraformTaskV4@4
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'aws'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        backendServiceAWS: 'aws_terraform'
+        backendAWSBucketName: 'terraform-state-mina-lab'
+        backendAWSKey: 'terraform.tfstate'
+
+    - task: TerraformTaskV4@4
       displayName: 'Terraform Destroy'
-      condition: eq('${{ parameters.action }}', 'destroy')
+      env:
+        TF_VAR_rds_username: $(TF_VAR_rds_username)
+        TF_VAR_rds_password: $(TF_VAR_rds_password)
       inputs:
         provider: 'aws'
         command: 'destroy'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         commandOptions: '-var-file="${{ parameters.env }}.tfvars'
         environmentServiceNameAWS: 'aws_terraform'
