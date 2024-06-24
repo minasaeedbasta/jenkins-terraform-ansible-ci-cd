@@ -1,9 +1,20 @@
+parameters:
+- name: env
+  displayName: Select environment
+  type: string
+  default: dev
+  values:
+  - dev
+  - prod
+
 trigger:
 - main
+
 pr:
   branches:
     include:
     - '*'
+
 stages:
 - stage: Plan
   condition: eq(variables['Build.Reason'], 'PullRequest')
@@ -35,7 +46,7 @@ stages:
         provider: 'aws'
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        commandOptions: '-var-file="dev.tfvars"'
+        commandOptions: '-var-file="${{ parameters.env }}.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
 
 - stage: Apply
@@ -68,5 +79,5 @@ stages:
         provider: 'aws'
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        commandOptions: '-var-file="dev.tfvars"'
+        commandOptions: '-var-file="${{ parameters.env }}.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
