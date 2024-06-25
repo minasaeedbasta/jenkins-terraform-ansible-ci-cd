@@ -57,7 +57,7 @@ stages:
         environmentServiceNameAWS: 'aws_terraform'
 
 - stage: Apply
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq('${{ parameters.action }}', 'apply'))
   jobs:
   - job: terraformApply
     pool:
@@ -90,7 +90,7 @@ stages:
         environmentServiceNameAWS: 'aws_terraform'
 
 - stage: Destroy
-  condition: eq('${{ parameters.action }}', 'destroy')
+  condition: and(succeeded(), eq('${{ parameters.action }}', 'destroy'))
   jobs:
   - job: terraformDestroy
     pool:
@@ -119,5 +119,5 @@ stages:
         provider: 'aws'
         command: 'destroy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        commandOptions: '-var-file="${{ parameters.env }}.tfvars'
+        commandOptions: '-var-file="${{ parameters.env }}.tfvars"'
         environmentServiceNameAWS: 'aws_terraform'
